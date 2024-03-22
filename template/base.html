@@ -68,14 +68,14 @@
               <div class="dropdown-menu" aria-labelledby="dropdown04">
               	<a class="dropdown-item" href="{% url 'shop_url' %}">Shop</a>
               	<a class="dropdown-item" href="{% url 'wishlist_url' %}">Wishlist</a>
-                <a class="dropdown-item" href="{% url">Single Product</a>
-                <a class="dropdown-item" href="cart.html">Cart</a>
-                <a class="dropdown-item" href="checkout.html">Checkout</a>
+                <a class="dropdown-item" href="{% url 'single-product' %}">Single Product</a>
+                <a class="dropdown-item" href="{% url 'cart_url' %}">Cart</a>
+                <a class="dropdown-item" href="{% url 'checkout_url' %}">Checkout</a>
               </div>
             </li>
-	          <li class="nav-item"><a href="about.html" class="nav-link">About</a></li>
-	          <li class="nav-item"><a href="blog.html" class="nav-link">Blog</a></li>
-	          <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
+	          <li class="nav-item"><a href="{% url 'about_url' %}" class="nav-link">About</a></li>
+	          <li class="nav-item"><a href="{% url 'blog_url' %}" class="nav-link">Blog</a></li>
+	          <li class="nav-item"><a href="{% url 'contact_url' %}" class="nav-link">Contact</a></li>
               <li class="nav-item"><a href="{% url 'account_url' %}" class="nav-link">Account</a></li>
 	          <li class="nav-item cta cta-colored"><a href="cart.html" class="nav-link"><span class="icon-shopping_cart"></span>[0]</a></li>
 
