@@ -36,3 +36,4 @@ def shop_view(request):
 def wishlist_view(request):
     return render(request,'wishlist.html')
 
+
