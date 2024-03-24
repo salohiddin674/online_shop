@@ -115,3 +115,9 @@ class Comment(models.Model):
     def __str__(self):
         return self.text
 
+
+class Recent_blog(models.Model):
+    user = models.ForeignKey(to='User', on_delete=models.CASCADE)
+    title = models.CharField(max_length=255)
+    date = models.DateTimeField()
+    image = models.ImageField(upload_to='recent_blog_img/')

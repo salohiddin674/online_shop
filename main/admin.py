@@ -15,3 +15,9 @@ class EmployeeAdmin(UserAdmin):
         }),
         (_('Extra'), {'fields': ('phone_number',)}),
     )
+
+admin.site.register(Banner)
+admin.site.register(Blog)
+admin.site.register(Recent_blog)
+admin.site.register(Tag)
+admin.site.register(Category)

@@ -13,7 +13,10 @@ def about_view(request):
 
 def blog_view(request):
     context = {
-        'blog':Blog.objects.all().order_by('-id')[:6]
+        'blog':Blog.objects.all().order_by('-id')[:6],
+        'category':Category.objects.all().order_by('-id')[:4],
+        'recent_blog':Recent_blog.objects.all().order_by('-id')[:3],
+        'tag':Tag.objects.all().order_by('-id')[:7]
     }
     return render(request,'blog.html', context)
 
