@@ -1,7 +1,6 @@
 from django.shortcuts import render
 from .models import *
 
-
 def index_view(request):
     return render(request,'index.html')
 
@@ -13,7 +12,10 @@ def about_view(request):
     return render(request, 'about.html')
 
 def blog_view(request):
-    return render(request,'blog.html')
+    context = {
+        'blog':Blog.objects.all().order_by('-id')[:6]
+    }
+    return render(request,'blog.html', context)
 
 def blog_single_view(request):
     return render(request, 'blog-single.html')
