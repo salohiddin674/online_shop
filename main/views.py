@@ -88,8 +88,13 @@ def checkout_view(request):
     else:
         return redirect('index_url')
     basket = Basket.objects.filter(user_id=user.id).count()
+    products = Basket.objects.filter(user_id=user.id)
+    total = 0
+    for i in products:
+        total += i.product.price
     context = {
-        'basket': basket
+        'basket': basket,
+        "total": total
     }
     return render(request, 'checkout.html', context)
 
