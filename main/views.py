@@ -10,7 +10,12 @@ def index_view(request):
     else:
         basket = 0
     context = {
-        'basket': basket
+        'basket': basket,
+        'banner':Banner.objects.all().order_by('-id')[:2],
+        'category_left':Category.objects.all().order_by('id')[:2],
+        'category_right':Category.objects.all().order_by('id')[2:4],
+        'product':Product.objects.all().order_by('id')[:8],
+
     }
     return render(request,'index.html', context)
 
