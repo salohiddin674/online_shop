@@ -27,9 +27,9 @@ def account_view(request):
 def about_view(request):
     if request.user.is_authenticated:
         user = request.user
+        basket = Basket.objects.filter(user_id=user.id).count()
     else:
-        return redirect('index_url')
-    basket = Basket.objects.filter(user_id=user.id).count()
+        basket = 0
     context = {
         'basket': basket,
         'about':About.objects.last()
@@ -41,9 +41,9 @@ def about_view(request):
 def blog_view(request):
     if request.user.is_authenticated:
         user = request.user
+        basket = Basket.objects.filter(user_id=user.id).count()
     else:
-        return redirect('index_url')
-    basket = Basket.objects.filter(user_id=user.id).count()
+        basket = 0
     context = {
         'blog':Blog.objects.all().order_by('-id')[:4],
         'category':Category.objects.all().order_by('-id')[:4],
@@ -56,10 +56,10 @@ def blog_view(request):
 def blog_single_view(request, pk):
     if request.user.is_authenticated:
         user = request.user
+        basket = Basket.objects.filter(user_id=user.id).count()
     else:
-        return redirect('index_url')
+        basket = 0
     blog = Blog.objects.get(pk=pk)
-    basket = Basket.objects.filter(user_id=user.id).count()
     context = {
         'basket': basket,
         'blog': blog,
@@ -74,9 +74,9 @@ def blog_single_view(request, pk):
 def cart_view(request):
     if request.user.is_authenticated:
         user = request.user
+        basket = Basket.objects.filter(user_id=user.id).count()
     else:
-        return redirect('index_url')
-    basket = Basket.objects.filter(user_id=user.id)
+        basket = 0
     product_counts = basket.values('product').annotate(count=Count('id'))
     duplicate_products = [(product_count['product'], product_count['count']) for product_count in product_counts]
     products = []
@@ -97,10 +97,11 @@ def cart_view(request):
 def checkout_view(request):
     if request.user.is_authenticated:
         user = request.user
+        basket = Basket.objects.filter(user_id=user.id).count()
+        products = Basket.objects.filter(user_id=user.id)
     else:
-        return redirect('index_url')
-    basket = Basket.objects.filter(user_id=user.id).count()
-    products = Basket.objects.filter(user_id=user.id)
+        basket = 0
+        products = []
     total = 0
     for i in products:
         total += i.product.price
@@ -114,9 +115,10 @@ def checkout_view(request):
 def contact_view(request):
     if request.user.is_authenticated:
         user = request.user
+        basket = Basket.objects.filter(user_id=user.id).count()
     else:
-        return redirect('index_url')
-    basket = Basket.objects.filter(user_id=user.id).count()
+        basket = 0
+
     contact = Info.objects.last()
     context = {
         'basket': basket,
@@ -172,9 +174,9 @@ def shop_view(request):
 def wishlist_view(request):
     if request.user.is_authenticated:
         user = request.user
+        basket = Basket.objects.filter(user_id=user.id)
     else:
-        return redirect('index_url')
-    basket = Basket.objects.filter(user_id=user.id)
+        basket = 0
     product_counts = basket.values('product').annotate(count=Count('id'))
     duplicate_products = [(product_count['product'], product_count['count']) for product_count in product_counts]
     products = []
