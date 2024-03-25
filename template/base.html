@@ -186,6 +186,23 @@
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&sensor=false"></script>
   <script src="{% static 'js/google-map.js' %}"></script>
   <script src="{% static 'js/main.js' %}"></script>
-
+<script>
+    function addToBasket(productId) {
+        event.preventDefault();
+        var xhr = new XMLHttpRequest();
+        var url = "/add_basket/" + productId + "/";
+        xhr.open("GET", url, true);
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                // Mahsulot qo'shildi
+                alert("Mahsulot savatga qo'shildi");
+                setTimeout(function() {
+                    window.close();
+                }, 5);
+            }
+        };
+        xhr.send();
+    }
+</script>
   </body>
 </html>

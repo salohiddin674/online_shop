@@ -2,6 +2,9 @@ from django.shortcuts import render, redirect
 from django.core.paginator import Paginator
 from django.db.models import Count
 from .models import *
+from django.http import HttpResponse
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import login, logout, authenticate
 
 def index_view(request):
     if request.user.is_authenticated:
@@ -21,7 +24,7 @@ def index_view(request):
 
 
 def account_view(request):
-    return render(request, 'account.html')
+    return render(request, 'account_settings.html')
 
 
 def about_view(request):
@@ -36,6 +39,20 @@ def about_view(request):
 
     }
     return render(request, 'about.html', context)
+
+
+@login_required(login_url='/login/')
+def add_basket(request, pk):
+    if request.user.is_authenticated:
+        user = request.user
+    else:
+        return redirect('login_url')
+    product = Product.objects.get(pk=pk)
+    Basket.objects.create(
+        user=user,
+        product=product,
+    )
+    return HttpResponse("Item added to basket successfully!")
 
 
 def blog_view(request):
@@ -72,23 +89,28 @@ def blog_single_view(request, pk):
 
 
 def cart_view(request):
+    basket = 0
+
     if request.user.is_authenticated:
         user = request.user
-        basket = Basket.objects.filter(user_id=user.id).count()
+        basket = Basket.objects.filter(user_id=user.id).count()  # count() metodini ishlatish
     else:
-        basket = 0
-    product_counts = basket.values('product').annotate(count=Count('id'))
-    duplicate_products = [(product_count['product'], product_count['count']) for product_count in product_counts]
+        basket = []
+
     products = []
-    for product_id, count in duplicate_products:
-        product = Product.objects.get(id=product_id)
-        products.append({'name': product,'number': count, 'common': count*product.price})
     total = 0
-    for i in products:
-        total += i['common']
+
+    if basket != 0:
+        product_counts = Basket.objects.filter(user_id=user.id).values('product').annotate(count=Count('id'))
+        duplicate_products = [(product_count['product'], product_count['count']) for product_count in product_counts]
+
+        for product_id, count in duplicate_products:
+            product = Product.objects.get(id=product_id)
+            products.append({'name': product, 'number': count, 'common': count * product.price})
+            total += count * product.price
     context ={
         'products': products,
-        'basket': basket.count(),
+        'basket': basket,
         'total': total
     }
     return render(request,'cart.html', context)
@@ -172,21 +194,26 @@ def shop_view(request):
 
 
 def wishlist_view(request):
+    basket = 0
+
     if request.user.is_authenticated:
         user = request.user
-        basket = Basket.objects.filter(user_id=user.id)
+        basket = Basket.objects.filter(user_id=user.id).count()
     else:
-        basket = 0
-    product_counts = basket.values('product').annotate(count=Count('id'))
-    duplicate_products = [(product_count['product'], product_count['count']) for product_count in product_counts]
+        basket = []
+
     products = []
-    for product_id, count in duplicate_products:
-        product = Product.objects.get(id=product_id)
-        products.append({'name': product,'number': count, 'common': count*product.price})
     total = 0
-    for i in products:
-        total += i['common']
-    basket = Basket.objects.filter(user_id=user.id).count()
+
+    if basket != 0:
+        product_counts = Basket.objects.filter(user_id=user.id).values('product').annotate(count=Count('id'))
+        duplicate_products = [(product_count['product'], product_count['count']) for product_count in product_counts]
+
+        for product_id, count in duplicate_products:
+            product = Product.objects.get(id=product_id)
+            products.append({'name': product, 'number': count, 'common': count * product.price})
+            total += count * product.price
+
     context = {
         'basket': basket,
         'products': products,
@@ -205,3 +232,142 @@ def create_comment(request, pk):
         text = text,
         )
     return redirect('blog_single_url', blog.id)
+
+
+@login_required(login_url='/login/')
+def edit_profile(request):
+    user = request.user
+
+    if request.method == 'POST':
+        new_username = request.POST.get('username')
+
+        if User.objects.filter(username=new_username).exists() and user.username != new_username:
+            context = {'message': 'Ushbu foydalanuvchi nomi band. Iltimos, boshqa nom kiriting.', "error": True, 'user':user}
+            return render(request, 'account_settings.html', context)
+
+        new_first_name = request.POST.get('first_name')
+        new_last_name = request.POST.get('last_name')
+        new_phone_number = request.POST.get('phone_number')
+        new_mobile_number = request.POST.get('mobile_number')
+        new_email = request.POST.get('email')
+        new_address = request.POST.get('address')
+
+        user.username = new_username
+        user.first_name = new_first_name
+        user.last_name = new_last_name
+        user.phone_number = new_phone_number
+        user.mobile_number = new_mobile_number
+        user.email = new_email
+        user.address = new_address
+        user.save()
+
+        context = {'message': 'Foydalanuvchi ma\'lumotlari muvaffaqiyatli yangilandi.', 'user': user}
+        return render(request, 'account_settings.html', context)
+
+    return render(request, 'edit_profile.html', {'user': user})
+
+
+@login_required(login_url='/login/')
+def edit_password_user(request):
+    user = request.user
+    if request.method == 'POST':
+        current_pass = request.POST.get('current_pass')
+        new_pass = request.POST.get('new_pass')
+        again_new_pass = request.POST.get('again_new_pass')
+
+
+        auth_user = authenticate(username=user.username, password=current_pass)
+        if auth_user is not None:
+            if new_pass == again_new_pass:
+                # Yangi parolni sozlash
+                user.set_password(new_pass)
+                user.save()
+
+                # Yangi parol bilan foydalanuvchini avtorizatsiya qilish
+                login(request, user)
+
+                context = {'message': 'Foydalanuvchi paroli muvaffaqiyatli o\'zgartirildi.', 'user': user}
+                return render(request, 'account_settings.html', context)
+            else:
+                context = {'message': 'Parollar mos emas.', 'user': user}
+                return render(request, 'account_settings.html', context)
+        else:
+            context = {'message': "Eski parol not'g'ri kiritildi", 'user': user}
+            return render(request, 'account_settings.html', context)
+    context = {'user':user}
+    return render(request, 'account_settings.html', context)
+
+
+
+@login_required(login_url='/login/')
+def create_order(request):
+    if request.method == 'POST':
+        firstname = request.POST.get('firstname')
+        lastname = request.POST.get('lastname')
+        street = request.POST.get('street')
+        city = request.POST.get('city')
+        phone_number = request.POST.get('phone_number')
+        products = ""
+        total = 0
+        user = request.user
+        product_counts = Basket.objects.filter(user_id=user.id).values('product').annotate(count=Count('id'))
+        duplicate_products = [(product_count['product'], product_count['count']) for product_count in product_counts]
+
+        for product_id, count in duplicate_products:
+            product = Product.objects.get(id=product_id)
+            products += f"Maxsulot nomi: {product.title}, Maxsulot soni {count}, Maxsulot narxi: {product.price}, Maxsulot umumiy summasi: {count*product.price}"
+            total += count * product.price
+        Order.objects.create(
+            firstname=firstname,
+            lastname=lastname,
+            street=street,
+            city=city,
+            phone_number=phone_number,
+            products=products,
+            total=total
+        )
+        return redirect('index_url')
+
+
+def login_view(request):
+    if request.method == "POST":
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        usr = authenticate(
+            username=username,
+            password=password
+        )
+        if usr is not None:
+            login(request, usr)
+            return redirect('index_url')
+        else:
+            context = {
+                'error': True
+            }
+            return render(request, 'login.html', context)
+
+    return render(request, 'login.html')
+
+
+def sing_up_view(request):
+    if request.method == "POST":
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        if User.objects.filter(username=username).exists():
+            context = {
+                'band': True,
+            }
+            return render(request, 'sing-up.html', context)
+        else:
+            User.objects.create_user(
+                username=username,
+                password=password
+            )
+            return redirect('index_url')
+
+    return render(request, 'sing-up.html')
+
+
+def user_logout(request):
+    logout(request)
+    return redirect('index_url')

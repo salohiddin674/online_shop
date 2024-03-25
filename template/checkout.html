@@ -13,24 +13,25 @@
         </div>
       </div>
     </div>
-<form>
+
     <section class="ftco-section">
       <div class="container">
         <div class="row justify-content-center">
           <div class="col-xl-7 ftco-animate">
-						<form action="#" class="billing-form">
-							<h3 class="mb-4 billing-heading">Billing Details</h3>
+			  <form action="{% url 'create_order_url' %}" method="post" class="billing-form">
+				  {% csrf_token %}
+				  <h3 class="mb-4 billing-heading">Billing Details</h3>
 	          	<div class="row align-items-end">
 	          		<div class="col-md-6">
 	                <div class="form-group">
 	                	<label for="firstname">Firt Name</label>
-	                  <input type="text" id="firstname" class="form-control" placeholder="">
+	                  <input type="text" name="firstname" id="firstname" class="form-control" placeholder="">
 	                </div>
 	              </div>
 	              <div class="col-md-6">
 	                <div class="form-group">
 	                	<label for="lastname">Last Name</label>
-	                  <input type="text" class="form-control" placeholder="">
+	                  <input type="text" name="lastname" id="lastname" class="form-control" placeholder="">
 	                </div>
                 </div>
                 <div class="w-100"></div>
@@ -38,28 +39,29 @@
 		            <div class="w-100"></div>
 		            <div class="col-md-6">
 		            	<div class="form-group">
-	                	<label for="streetaddress">Street Address</label>
-	                  <input type="text" class="form-control" placeholder="House number and street name">
+	                	<label for="street">Street Address</label>
+	                  <input type="text" name="street" id="street" class="form-control" placeholder="House number and street name">
 	                </div>
 		            </div>
 
 
 		            <div class="col-md-6">
 		            	<div class="form-group">
-	                	<label for="towncity">Town / City</label>
-	                  <input type="text" class="form-control" placeholder="">
+	                	<label for="city">Town / City</label>
+	                  <input type="text" name="city" id="city" class="form-control" placeholder="">
 	                </div>
 		            </div>
 		            <div class="col-md-6">
 	                <div class="form-group">
 	                	<label for="phone">Phone</label>
-	                  <input type="text" class="form-control" placeholder="">
+	                  <input type="text" id="phone" name="phone_number" class="form-control" placeholder="">
 	                </div>
 	              </div>
 
 
 
 	            </div>
+				  <p><button type="submit" class="btn btn-primary py-3s px-4">Place an order</button></p>
 	          </form><!-- END -->
 					</div>
 					<div class="col-xl-5">
@@ -90,8 +92,8 @@
 	          </div>
           </div> <!-- .col-md-8 -->
         </div>
-		  <p><button type="submit" class="btn btn-primary py-3s px-4">Place an order</button></p>
+
       </div>
     </section> <!-- .section -->
-	</form>
+
 {% endblock %}

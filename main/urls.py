@@ -12,9 +12,16 @@ urlpatterns =[
     path('contact/',contact_view , name='contact_url'),
     path('create_contact_us/',create_contact_us , name='create_contact_us_url'),
     path('product-single/<int:pk>/',product_single , name='product_single_url'),
-    path('shop/',shop_view , name='shop_url'),
-    path('wishlist/',wishlist_view , name='wishlist_url'),
-    path('create_comment/<int:pk>/', create_comment, name='create_comment_url')
+    path('shop/', shop_view, name='shop_url'),
+    path('create_order/', create_order, name='create_order_url'),
+    path('add_basket/<int:pk>/', add_basket, name='add_basket_url'),
+    path('wishlist/', wishlist_view, name='wishlist_url'),
+    path('create_comment/<int:pk>/', create_comment, name='create_comment_url'),
+    path('login/', login_view, name='login_url'),
+    path('edit_profile/', edit_profile, name='edit_profile_url'),
+    path('edit_password_user/', edit_password_user, name='edit_password_user_url'),
+    path('sing-up/', sing_up_view, name='sing_up_url'),
+    path('logout/', user_logout, name='logout_url'),
 
 
 ]

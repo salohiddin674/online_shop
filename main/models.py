@@ -118,8 +118,11 @@ class Comment(models.Model):
         return self.text
 
 
-class Recent_blog(models.Model):
-    user = models.ForeignKey(to='User', on_delete=models.CASCADE)
-    title = models.CharField(max_length=255)
-    date = models.DateTimeField()
-    image = models.ImageField(upload_to='recent_blog_img/')
+class Order(models.Model):
+    firstname = models.CharField(max_length=255)
+    lastname = models.CharField(max_length=255)
+    street = models.CharField(max_length=255)
+    city = models.CharField(max_length=255)
+    phone_number = models.CharField(max_length=255)
+    products = models.TextField()
+    total = models.DecimalField(max_digits=20, decimal_places=2)
