@@ -10,7 +10,12 @@ def index_view(request):
     else:
         basket = 0
     context = {
-        'basket': basket
+        'basket': basket,
+        'banner':Banner.objects.all().order_by('-id')[:2],
+        'category_left':Category.objects.all().order_by('id')[:2],
+        'category_right':Category.objects.all().order_by('id')[2:4],
+        'product':Product.objects.all().order_by('id')[:8],
+
     }
     return render(request,'index.html', context)
 
@@ -93,8 +98,13 @@ def checkout_view(request):
     else:
         return redirect('index_url')
     basket = Basket.objects.filter(user_id=user.id).count()
+    products = Basket.objects.filter(user_id=user.id)
+    total = 0
+    for i in products:
+        total += i.product.price
     context = {
-        'basket': basket
+        'basket': basket,
+        "total": total
     }
     return render(request, 'checkout.html', context)
 
