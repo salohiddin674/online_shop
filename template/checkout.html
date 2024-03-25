@@ -1,18 +1,19 @@
 {% extends 'base.html' %}
 {% block content %}
+{% load static %}
 
 
-    <div class="hero-wrap hero-bread" style="background-image: url('images/bg_1.jpg');">
+    <div class="hero-wrap hero-bread" style="background-image: url({% static 'images/bg_1.jpg' %});">
       <div class="container">
         <div class="row no-gutters slider-text align-items-center justify-content-center">
           <div class="col-md-9 ftco-animate text-center">
-          	<p class="breadcrumbs"><span class="mr-2"><a href="index.html">Home</a></span> <span>Checkout</span></p>
+          	<p class="breadcrumbs"><span class="mr-2"><a href="{% url 'index_url' %}">Home</a></span> <span>Checkout</span></p>
             <h1 class="mb-0 bread">Checkout</h1>
           </div>
         </div>
       </div>
     </div>
-
+<form>
     <section class="ftco-section">
       <div class="container">
         <div class="row justify-content-center">
@@ -23,7 +24,7 @@
 	          		<div class="col-md-6">
 	                <div class="form-group">
 	                	<label for="firstname">Firt Name</label>
-	                  <input type="text" class="form-control" placeholder="">
+	                  <input type="text" id="firstname" class="form-control" placeholder="">
 	                </div>
 	              </div>
 	              <div class="col-md-6">
@@ -87,15 +88,8 @@
 	                  <input type="text" class="form-control" placeholder="">
 	                </div>
                 </div>
-                <div class="w-100"></div>
-                <div class="col-md-12">
-                	<div class="form-group mt-4">
-										<div class="radio">
-										  <label class="mr-3"><input type="radio" name="optradio"> Create an Account? </label>
-										  <label><input type="radio" name="optradio"> Ship to different address</label>
-										</div>
-									</div>
-                </div>
+
+
 	            </div>
 	          </form><!-- END -->
 					</div>
@@ -129,7 +123,7 @@
 									<div class="form-group">
 										<div class="col-md-12">
 											<div class="radio">
-											   <label><input type="radio" name="optradio" class="mr-2"> Direct Bank Tranfer</label>
+											   <label><input type="radio" name="optradio" class="mr-2" required> Direct Bank Tranfer</label>
 											</div>
 										</div>
 									</div>
@@ -150,11 +144,12 @@
 									<div class="form-group">
 										<div class="col-md-12">
 											<div class="checkbox">
-											   <label><input type="checkbox" value="" class="mr-2"> I have read and accept the terms and conditions</label>
+											   <label><input type="checkbox" value="" class="mr-2" required> I have read and accept the terms and conditions</label>
 											</div>
 										</div>
 									</div>
-									<p><a href="#"class="btn btn-primary py-3 px-4">Place an order</a></p>
+
+						<p><button type="submit" class="btn btn-primary py-3 px-4">Place an order</button></p>
 								</div>
 	          	</div>
 	          </div>
@@ -162,4 +157,5 @@
         </div>
       </div>
     </section> <!-- .section -->
+	</form>
 {% endblock %}
