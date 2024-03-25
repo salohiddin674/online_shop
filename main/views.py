@@ -31,7 +31,9 @@ def about_view(request):
         return redirect('index_url')
     basket = Basket.objects.filter(user_id=user.id).count()
     context = {
-        'basket': basket
+        'basket': basket,
+        'about':About.objects.last()
+
     }
     return render(request, 'about.html', context)
 
