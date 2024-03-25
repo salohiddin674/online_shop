@@ -38,23 +38,28 @@ def blog_view(request):
         return redirect('index_url')
     basket = Basket.objects.filter(user_id=user.id).count()
     context = {
-        'blog':Blog.objects.all().order_by('-id')[:6],
+        'blog':Blog.objects.all().order_by('-id')[:4],
         'category':Category.objects.all().order_by('-id')[:4],
-        'recent_blog':Recent_blog.objects.all().order_by('-id')[:3],
         'tag':Tag.objects.all().order_by('-id')[:7],
         'basket': basket
     }
     return render(request,'blog.html', context)
 
 
-def blog_single_view(request):
+def blog_single_view(request, pk):
     if request.user.is_authenticated:
         user = request.user
     else:
         return redirect('index_url')
+    blog = Blog.objects.get(pk=pk)
     basket = Basket.objects.filter(user_id=user.id).count()
     context = {
-        'basket': basket
+        'basket': basket,
+        'blog': blog,
+        'tag': Tag.objects.all().order_by('-id')[:3],
+        'comment':Comment.objects.all().order_by('-id')[:3],
+        'category': Category.objects.all().order_by('-id')[:4],
+        'tag': Tag.objects.all().order_by('-id')[:7],
     }
     return render(request, 'blog-single.html', context)
 
@@ -176,3 +181,13 @@ def wishlist_view(request):
     return render(request, 'wishlist.html', context)
 
 
+def create_comment(request, pk):
+    blog = Blog.objects.get(pk=pk)
+    if request.method == "POST":
+        text = request.POST['text']
+        Comment.objects.create(
+        user= request.user,
+        blog = blog,
+        text = text,
+        )
+    return redirect('blog_single_url', blog.id)

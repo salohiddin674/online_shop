@@ -98,6 +98,7 @@ class Blog(models.Model):
     user = models.ForeignKey(to=User, on_delete=models.CASCADE)
     title = models.CharField(max_length=150)
     text = models.TextField()
+    text2 = models.TextField()
     image = models.ImageField(upload_to='blog_images/', null=True, blank=True)
     tag = models.ManyToManyField(to=Tag, blank=True)
     created_at = models.DateTimeField(auto_now=True)

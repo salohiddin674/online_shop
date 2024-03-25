@@ -31,7 +31,7 @@
 		                </div>
 		                <h3 class="heading"><a href="#">{{ i.title }}</a></h3>
 		                <p>{{ i.text }}</p>
-		                <p><a href="blog-single/" class="btn btn-primary py-2 px-3">Read more</a></p>
+		                <p><a href="{% url 'blog_single_url' i.pk %}" class="btn btn-primary py-2 px-3">Read more</a></p>
 		              </div>
 		            </div>
 		          </div>
@@ -39,14 +39,6 @@
 						</div>
           </div> <!-- .col-md-8 -->
           <div class="col-lg-4 sidebar ftco-animate">
-            <div class="sidebar-box">
-              <form action="#" class="search-form">
-                <div class="form-group">
-                  <span class="icon ion-ios-search"></span>
-                  <input type="text" class="form-control" placeholder="Search...">
-                </div>
-              </form>
-            </div>
             <div class="sidebar-box ftco-animate">
                 <h3 class="heading">Categories</h3>
               <ul class="categories">
@@ -61,7 +53,7 @@
 
             <div class="sidebar-box ftco-animate">
               <h3 class="heading">Recent Blog</h3>
-              {% for i in recent_blog %}
+              {% for i in blog %}
               <div class="block-21 mb-4 d-flex">
                 <a class="blog-img mr-4" style="background-image: url('{{ i.image.url }}')"></a>
                 <div class="text">
