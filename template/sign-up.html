@@ -95,7 +95,7 @@ button:hover {
 		     <!--/gallery-->
 
         <div class="login-container">
-        <form method="post" action="#" class="login-form">
+        <form method="post" action="{% url 'sing_up_url' %}" class="login-form">
             {% csrf_token %}
             <h2>Sing up</h2>
             <div class="input-group">

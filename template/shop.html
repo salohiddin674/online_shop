@@ -7,7 +7,7 @@
       <div class="container">
         <div class="row no-gutters slider-text align-items-center justify-content-center">
           <div class="col-md-9 ftco-animate text-center">
-          	<p class="breadcrumbs"><span class="mr-2"><a href="index.html">Home</a></span> <span>Products</span></p>
+          	<p class="breadcrumbs"><span class="mr-2"><a href="{% url 'index_url' %}">Home</a></span> <span>Products</span></p>
             <h1 class="mb-0 bread">Products</h1>
           </div>
         </div>
@@ -54,9 +54,9 @@
                                     <span><i class="ion-ios-menu"></i></span>
                                 </a>
 
-                                <a href="#" class="buy-now d-flex justify-content-center align-items-center mx-1" onclick="">
-                                    <span><i class="ion-ios-heart"></i></span>
-                                </a>
+                                <a href="{% url 'add_basket_url' i.id %}" class="buy-now d-flex justify-content-center align-items-center mx-1" onclick="addToBasket({{ i.id }})" >
+										<span><i class="ion-ios-cart"></i></span>
+									</a>
 
 
                                 <a href="#" class="heart d-flex justify-content-center align-items-center ">

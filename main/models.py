@@ -3,8 +3,8 @@ from django.contrib.auth.models import AbstractUser
 
 
 class User(AbstractUser):
-    phone_number = models.CharField(max_length=20, null=True, blank=True, unique=True)
-    mobile_number = models.CharField(max_length=20, null=True, blank=True, unique=True)
+    phone_number = models.CharField(max_length=20, null=True, blank=True)
+    mobile_number = models.CharField(max_length=20, null=True, blank=True)
     address = models.CharField(max_length=255)
 
     class Meta:
@@ -109,7 +109,7 @@ class Blog(models.Model):
 
 
 class Comment(models.Model):
-    user = models.ForeignKey(to=User, on_delete=models.CASCADE)
+    user = models.CharField(max_length=255)
     blog = models.ForeignKey(to=Blog, on_delete=models.CASCADE)
     text = models.TextField()
     creates_at = models.DateTimeField(auto_now=True)

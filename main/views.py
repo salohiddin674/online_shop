@@ -6,6 +6,7 @@ from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, logout, authenticate
 
+
 def index_view(request):
     if request.user.is_authenticated:
         user = request.user
@@ -15,9 +16,9 @@ def index_view(request):
     context = {
         'basket': basket,
         'banner':Banner.objects.all().order_by('-id')[:2],
-        'category_left':Category.objects.all().order_by('id')[:2],
-        'category_right':Category.objects.all().order_by('id')[2:4],
         'product':Product.objects.all().order_by('id')[:8],
+        'latest': Blog.objects.all().order_by('-id')[:4],
+        'contact': Info.objects.last()
 
     }
     return render(request,'index.html', context)
@@ -35,7 +36,8 @@ def about_view(request):
         basket = 0
     context = {
         'basket': basket,
-        'about':About.objects.last()
+        'about': About.objects.last(),
+        'contact': Info.objects.last()
 
     }
     return render(request, 'about.html', context)
@@ -65,7 +67,8 @@ def blog_view(request):
         'blog':Blog.objects.all().order_by('-id')[:4],
         'category':Category.objects.all().order_by('-id')[:4],
         'tag':Tag.objects.all().order_by('-id')[:7],
-        'basket': basket
+        'basket': basket,
+        'contact': Info.objects.last()
     }
     return render(request,'blog.html', context)
 
@@ -80,20 +83,23 @@ def blog_single_view(request, pk):
     context = {
         'basket': basket,
         'blog': blog,
+        'recent_blog': Blog.objects.all().order_by('-id')[:5],
         'tag': Tag.objects.all().order_by('-id')[:3],
         'comment':Comment.objects.all().order_by('-id')[:3],
         'category': Category.objects.all().order_by('-id')[:4],
         'tag': Tag.objects.all().order_by('-id')[:7],
+        'contact': Info.objects.last()
     }
     return render(request, 'blog-single.html', context)
 
 
+@login_required(login_url='/login/')
 def cart_view(request):
     basket = 0
 
     if request.user.is_authenticated:
         user = request.user
-        basket = Basket.objects.filter(user_id=user.id).count()  # count() metodini ishlatish
+        basket = Basket.objects.filter(user_id=user.id).count()
     else:
         basket = []
 
@@ -111,9 +117,10 @@ def cart_view(request):
     context ={
         'products': products,
         'basket': basket,
-        'total': total
+        'total': total,
+        'contact': Info.objects.last()
     }
-    return render(request,'cart.html', context)
+    return render(request, 'cart.html', context)
 
 
 def checkout_view(request):
@@ -129,7 +136,8 @@ def checkout_view(request):
         total += i.product.price
     context = {
         'basket': basket,
-        "total": total
+        "total": total,
+        'contact': Info.objects.last()
     }
     return render(request, 'checkout.html', context)
 
@@ -144,7 +152,8 @@ def contact_view(request):
     contact = Info.objects.last()
     context = {
         'basket': basket,
-        'contact': contact
+        'contact': contact,
+
     }
     return render(request,'contact.html', context)
 
@@ -167,9 +176,16 @@ def create_contact_us(request):
 def product_single(request, pk):
     product = Product.objects.get(pk=pk)
     related = Product.objects.filter(category=product.category).order_by('-id')[:4]
+    if request.user.is_authenticated:
+        user = request.user
+        basket = Basket.objects.filter(user_id=user.id).count()
+    else:
+        basket = 0
     context = {
         'product': product,
-        'related': related
+        'related': related,
+        'basket': basket,
+        'contact': Info.objects.last()
     }
     return render(request, 'product-single.html', context)
 
@@ -177,6 +193,11 @@ def product_single(request, pk):
 def shop_view(request):
     categories = Category.objects.all()
     category = request.GET.get('category')
+    if request.user.is_authenticated:
+        user = request.user
+        basket = Basket.objects.filter(user_id=user.id).count()
+    else:
+        basket = 0
     if category:
         products = Product.objects.filter(category__name=category)
     else:
@@ -188,46 +209,48 @@ def shop_view(request):
     context = {
         'categories': categories,
         'products': page_obj,
-        'selected_category': category
+        'selected_category': category,
+        'basket': basket,
+        'contact': Info.objects.last()
     }
     return render(request, 'shop.html', context)
 
 
-def wishlist_view(request):
-    basket = 0
-
+@login_required(login_url='/login/')
+def add_basket_form(request, pk):
     if request.user.is_authenticated:
         user = request.user
-        basket = Basket.objects.filter(user_id=user.id).count()
     else:
-        basket = []
+        return redirect('login_url')
+    number = request.POST.get('number')
+    product = Product.objects.get(pk=pk)
+    if number.isdigit():
+        for _ in range(int(number)):
+            Basket.objects.create(
+                user=user,
+                product=product,
+            )
+    return redirect('product_single_url', pk=pk)
 
-    products = []
-    total = 0
 
-    if basket != 0:
-        product_counts = Basket.objects.filter(user_id=user.id).values('product').annotate(count=Count('id'))
-        duplicate_products = [(product_count['product'], product_count['count']) for product_count in product_counts]
-
-        for product_id, count in duplicate_products:
-            product = Product.objects.get(id=product_id)
-            products.append({'name': product, 'number': count, 'common': count * product.price})
-            total += count * product.price
-
-    context = {
-        'basket': basket,
-        'products': products,
-        'total': total
-    }
-    return render(request, 'wishlist.html', context)
+@login_required(login_url='/login/')
+def remove_cart_product(request, pk, id):
+    product = Product.objects.get(pk=id)
+    basket = Basket.objects.filter(user_id=pk, product_id=product)
+    basket.delete()
+    return redirect('cart_url')
 
 
 def create_comment(request, pk):
     blog = Blog.objects.get(pk=pk)
+    if request.user.is_authenticated:
+        user = request.user.username
+    else:
+        user = 'AnonimUser'
     if request.method == "POST":
         text = request.POST['text']
         Comment.objects.create(
-        user= request.user,
+        user= user,
         blog = blog,
         text = text,
         )
@@ -329,6 +352,32 @@ def create_order(request):
         return redirect('index_url')
 
 
+@login_required(login_url='/login/')
+def update_cart(request, pk):
+    user = request.user
+    if request.method == 'POST':
+        number = int(request.POST.get('number'))
+        basket = Basket.objects.filter(user=user, product_id=pk)
+        product = Product.objects.get(pk=pk)
+        if number > basket.count():
+            numbers = number-basket.count()
+            for i in range(numbers):
+                Basket.objects.create(
+                    user=user,
+                    product=product
+                )
+        elif number < basket.count():
+            numbers = basket.count() - number
+            for i in range(numbers):
+                basket[0].delete()
+        elif number == 0:
+            basket.delete()
+    return redirect('cart_url')
+
+
+
+
+
 def login_view(request):
     if request.method == "POST":
         username = request.POST.get('username')
@@ -364,8 +413,7 @@ def sing_up_view(request):
                 password=password
             )
             return redirect('index_url')
-
-    return render(request, 'sing-up.html')
+    return render(request, 'sign-up.html')
 
 
 def user_logout(request):

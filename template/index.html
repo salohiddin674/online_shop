@@ -78,44 +78,7 @@
 			</div>
 		</section>
 
-		<section class="ftco-section ftco-category ftco-no-pt">
-			<div class="container">
-				<div class="row">
-					<div class="col-md-8">
-						<div class="row">
-							<div class="col-md-6 order-md-last align-items-stretch d-flex">
-								<div class="category-wrap-2 ftco-animate img align-self-stretch d-flex" style="background-image: url({% static 'images/category.jpg' %});">
-									<div class="text text-center">
-										<h2>Vegetables</h2>
-										<p>Protect the health of every home</p>
-										<p><a href="#" class="btn btn-primary">Shop now</a></p>
-									</div>
-								</div>
-							</div>
-							<div class="col-md-6">
-								{% for i in category_left %}
-								<div class="category-wrap ftco-animate img mb-4 d-flex align-items-end" style="background-image: url({{i.images.url}});">
-									<div class="text px-3 py-1">
-										<h2 class="mb-0"><a href="#">{{i.name}}</a></h2>
-									</div>
-								</div>
-								{% endfor %}
-							</div>
-						</div>
-					</div>
 
-					<div class="col-md-4">
-						{% for i in category_right %}
-						<div class="category-wrap ftco-animate img mb-4 d-flex align-items-end" style="background-image: url({{i.images.url}});">
-							<div class="text px-3 py-1">
-								<h2 class="mb-0"><a href="#">{{i.name}}</a></h2>
-							</div>		
-						</div>
-						{% endfor %}
-					</div>
-				</div>
-			</div>
-		</section>
 
     <section class="ftco-section">
     	<div class="container">
@@ -140,7 +103,7 @@
 							{% endif %}
     					</a>
     					<div class="text py-3 pb-4 px-3 text-center">
-    						<h3><a href="#">{{ i.title }}</a></h3>
+    						<h3><a href="{% url 'product_single_url' i.id %}">{{ i.title }}</a></h3>
     						<div class="d-flex">
     							<div class="pricing">
 									{% if i.discount %}
@@ -163,6 +126,42 @@
 	    								<span><i class="ion-ios-heart"></i></span>
 	    							</a>
     							</div>
+    						</div>
+    					</div>
+    				</div>
+    			</div>
+				{% endfor %}
+
+    		</div>
+    	</div>
+    </section>
+<section class="ftco-section">
+    	<div class="container">
+				<div class="row justify-content-center mb-3 pb-3">
+          <div class="col-md-12 heading-section text-center ftco-animate">
+
+            <h2 class="mb-4">Latest News</h2>
+            <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia</p>
+          </div>
+        </div>
+    	</div>
+    	<div class="container">
+    		<div class="row">
+				{% for i in latest %}
+    			<div class="col-md-6 col-lg-3 ftco-animate">
+    				<div class="product">
+    					<a href="{% url 'blog_single_url' i.pk %}" class="img-prod"><img class="img-fluid" src="{{i.image.url}}" alt="Colorlib Template">
+
+    					</a>
+    					<div class="text py-3 pb-4 px-3 text-center">
+    						<h3><a href="{% url 'blog_single_url' i.pk %}">{{ i.title }}</a></h3>
+    						<div class="d-flex">
+    							<div class="pricing">
+
+		    					</div>
+	    					</div>
+	    					<div class="bottom-area d-flex px-3">
+
     						</div>
     					</div>
     				</div>

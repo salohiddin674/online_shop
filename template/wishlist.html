@@ -32,7 +32,7 @@
 						    <tbody>
 							{% for i in products %}
 								<tr class="text-center">
-						        <td class="product-remove"><a href="#"><span class="ion-ios-close"></span></a></td>
+						        <td class="product-remove"><a href="{% url 'remove_cart_product_url' user.id %}"><span class="ion-ios-close"></span></a></td>
 
 						        <td class="image-prod"><img src="{{i.name.image.url}}" style="height:100px; width:120px"></td>
 
